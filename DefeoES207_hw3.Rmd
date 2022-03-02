@@ -1,0 +1,100 @@
+---
+title: "DefeoES207_hw3"
+author: "Shelby Defeo"
+date: "3/2/2022"
+output: html_document
+---
+1. Import the data and compare the chloride concentrations from the two rock types. In particular, generate and compare the following graphs for chloride concentrations of the two rock types: a) histogram, b) boxplot, c) Q-Q plot. Describe the similarities and differences in chloride between these two rock types. What characteristics are evident in each graph?
+The histograms of both rock types are not normally distributed and are skewed to the right with most of the data being on the left and having a longer tail on the right. Quartz monzonite has higher concentrations of chloride than Granodiorite. With the boxplots, it appears that both types of rock have a datapoint that is higher than the others. The center of the data for both rock types is shifted towards the lower end of the graph. For Granodiorite, the high value is about 10 while for Quartz monzonite it is about 3.The diversion from normal for Granodiorite is easier to see in the Q-Q plot than for Quartz monzonite since it dips below and above the normal line more strongly. This means that it has larger tails and has less data in the center of the distribution.
+
+```{r}
+#1. Import the data and compare the chloride concentrations from the two rock types. In particular, generate and compare the following graphs for chloride concentrations of the two rock types: a) histogram, b) boxplot, c) Q-Q plot. Describe the similarities and differences in chloride between these two rock types. What characteristics are evident in each graph?
+library(tidyverse)
+#Checking working directory to be able to input file
+getwd()
+CC <- read_csv("ChlorideConcentrations.csv")
+
+#Separate columns as unique variables so they can be analyzed individually
+G <- CC$Granodiorite
+Q <- CC$`Quartz monzonite`
+
+#create hisotgrams for G and Q
+hist(G,prob=TRUE,xlim=c(0,12))
+hist(Q,prob=TRUE,xlim=c(0,4))
+
+#Create boxplots for G and Q
+boxplot(G)
+boxplot(Q)
+
+#Create Q-Q plots for G and Q
+qqnorm(G)
+qqline(G)
+qqnorm(Q)
+qqline(Q)
+```
+
+2. Using the chloride concentrations (from Question 1), compute 95% Confidence Interval estimates for the median of the granodiorite data.
+The 95% CI estimates for the median of granodiorite is 0.6016667 and 0.6983333.
+
+```{r}
+#2. Using the chloride concentrations (from Question 1), compute 95% Confidence Interval estimates for the median of the granodiorite data.
+Gmedian <- median(G)
+Gmedian 
+
+Gn <- length(G)
+Gn
+
+#insert code for median and standard error
+G_hat <- median(G)
+GSE <- 1/(Gn)^1/2
+G_hat
+GSE
+
+#insert code for alpha value for 95% confidence
+Galpha=(1 - 0.95)
+
+Galpha
+
+#assign critical t-value to variable t (use t because we have a small sample size of 18 [which is less than 30])
+
+Gt <- 1.740
+Gt
+
+#insert code for margin of error and confidence interval 
+GME <- Gt * GSE
+GME
+GLB <- G_hat - GME
+GUB <- G_hat + GME
+GLB 
+GUB
+print("Our 95% CI is: (0.6016667, 0.6983333)")
+```
+Scenario:You have been collecting data on well yields from across the state and storing your measurements in a dataset labeled VAwells.csv. You encounter a new well and find that its yield is 0.85 gallons per minute per foot.
+3. Is the yield of the new well likely to belong to the same distribution as the data in VAwells.csv or does it represent something larger? Use a 95% Prediction Interval to inform your answer.
+The new yield is likely to belong to the same distribution as the data in VAWells because it falls within our 95% predicition interval.(0.3123<0.85<0.905685)
+
+```{r}
+#3. Is the yield of the new well likely to belong to the same distribution as the data in VAwells.csv or does it represent something larger? Use a 95% Prediction Interval to inform your answer.
+
+#importing and organizing the data
+Wells <- read_csv("VAWells.csv")
+wy <- Wells$yields
+
+#finding the n of our data
+wy_length <- length(wy)
+wy_length
+
+# code for estimating 95% PI for the mean well yield
+wy_mean <- mean(wy)
+wy_mean
+wy_t <- qt(0.975,11)
+wy_t
+wy_stdev <- sd(wy)
+wy_stdev
+wy_PI_low <- wy_mean - (wy_t * wy_stdev * (sqrt(1 + (1/12))))
+wy_PI_low
+wy_PI_high <- wy_mean + (wy_t * wy_stdev * (sqrt(1 + (1/12))))
+wy_PI_high
+print("Our 95% PI is: (0.3123, 0.905685)")
+```
+
