@@ -214,3 +214,30 @@ lower_bound_high
 upper_bound_high
 ```
 
+CQ1. Write a function that calculates the mean, median, standard deviation, interquartile range, and QQ-Plot. Apply that function to the TP concentration data. In ~300 words or less discuss the differences between these measures and what conclusions you can draw about the data.
+
+```{r}
+#CQ1. Write a function that calculates the mean, median, standard deviation, interquartile range, and QQ-Plot. Apply that function to the TP concentration data. In ~300 words or less discuss the differences between these measures and what conclusions you can draw about the data.
+library(tidyverse)
+Lake <- read_csv("LakeErie2.csv") #import data
+
+TP <- Lake$TP  #separate out TP
+
+
+
+CQ1 <- function(TP) {
+  mean_TP <- mean(TP, na.rm = TRUE)
+  print(mean_TP)
+  median_TP <- median(TP, na.rm = TRUE)
+  print(median_TP)
+  stdev_TP <- sd(TP, na.rm = TRUE)
+  print(stdev_TP)
+  IQR_TP <- IQR(TP, na.rm = TRUE)
+  print(IQR_TP)
+  qqnorm(TP)
+}
+
+CQ1(TP)
+
+```
+
