@@ -34,7 +34,7 @@ qqline(Q)
 ```
 
 2. Using the chloride concentrations (from Question 1), compute 95% Confidence Interval estimates for the median of the granodiorite data.
-The 95% CI estimates for the median of granodiorite is 0.6016667 and 0.6983333.
+The 95% CI estimates for the median of granodiorite is 0.5145246 and 0.7854754.
 
 ```{r}
 #2. Using the chloride concentrations (from Question 1), compute 95% Confidence Interval estimates for the median of the granodiorite data.
@@ -46,7 +46,7 @@ Gn
 
 #insert code for median and standard error
 G_hat <- median(G)
-GSE <- 1/(Gn)^1/2
+GSE <- sd(G)/(Gn)^1/2
 G_hat
 GSE
 
@@ -67,7 +67,7 @@ GLB <- G_hat - GME
 GUB <- G_hat + GME
 GLB 
 GUB
-print("Our 95% CI is: (0.6016667, 0.6983333)")
+print("Our 95% CI is: (0.5145246, 0.7854754)")
 ```
 Scenario:You have been collecting data on well yields from across the state and storing your measurements in a dataset labeled VAwells.csv. You encounter a new well and find that its yield is 0.85 gallons per minute per foot.
 3. Is the yield of the new well likely to belong to the same distribution as the data in VAwells.csv or does it represent something larger? Use a 95% Prediction Interval to inform your answer.
@@ -96,5 +96,121 @@ wy_PI_low
 wy_PI_high <- wy_mean + (wy_t * wy_stdev * (sqrt(1 + (1/12))))
 wy_PI_high
 print("Our 95% PI is: (0.3123, 0.905685)")
+```
+
+
+
+4. Import Conecuh.csv and construct the 95% Confidence and Prediction Intervals for the mean and median annual stream flows.
+The 95% CI for the mean is 668.65 to 696.85. The 95% CI for the median is 566.897 and 595.10. The 95% PI for the mean is 104.72 to 1260.78. The 95% PI for the median is 2.97 to 1159.03. As expected, the predicition intervals are wider than the confidence intervals.
+```{r}
+#4. Import Conecuh.csv and construct the 95% Confidence and Prediction Intervals for the mean and median annual stream flows.
+#Import Excel file
+library(tidyverse)
+Con <- read_csv("Conecuh.csv")
+
+#separate out data
+flow <- Con$Flowcfs
+flow
+
+#finding the n of our data
+f_n <-length(flow)
+f_n
+
+#finding t values (because we have n < 30)
+flow_t <- qt(0.975,19)
+flow_t
+
+
+
+
+#95% CI for the mean
+CImean_hat <- mean(flow)  #find the mean of the data
+CI_SE <- sd(flow)/(f_n)^1/2 #find the standard error of the data
+CImean_hat #print mean of the data
+CImeanSE #print SE of the data
+
+CI_ME <- flow_t*CI_SE #find margin of error of the data
+CI_ME  #print margin of error
+
+CImean_LB <- CImean_hat - CI_ME #Find lower bound
+CImean_UB <- CImean_hat + CI_ME #find upper bound
+CImean_LB  #print lower bound
+CImean_UB  #print upper bound
+
+
+
+
+#95% CI for median
+CImedian_hat <- median(flow) #find median of the data
+CImedian_hat
+
+CImedian_LB <- CImedian_hat - CI_ME #Find lower bound
+CImedian_UB <- CImedian_hat + CI_ME #find upper bound
+CImedian_LB  #print lower bound
+CImedian_UB  #print upper bound
+
+
+
+
+
+
+#95% PI for mean
+flow_stdev <- sd(flow) #Standard deviation of flow
+flow_stdev
+
+flow_mean <- mean(flow) #mean of flow
+flow_mean
+
+flow_PImean_low <- flow_mean - (flow_t * flow_stdev * (sqrt(1 + (1/20)))) #lower bound of mean PI
+flow_PImean_low
+flow_PImean_high <- flow_mean + (flow_t * flow_stdev * (sqrt(1 + (1/20)))) #upper bound of mean PI
+flow_PImean_high
+
+
+
+
+#95% PI for median
+flow_median <- median(flow) #median of flow
+flow_median
+
+flow_PImedian_low <- flow_median - (flow_t * flow_stdev * (sqrt(1 + (1/20)))) #lower bound of median PI
+flow_PImedian_low
+flow_PImedian_high <- flow_median + (flow_t * flow_stdev * (sqrt(1 + (1/20)))) #upper bound of median PI
+flow_PImedian_high
+```
+
+
+5. Using Conecuh.csv, apply a bootstrap approach to construct the 95% Confidence Interval for the mean annual streamflows. How does your answer change if you use 1000 bootstrap replicates vs. 10000 bootstrap replicates? How does your bootstrap Confidence Interval compare to your estimate in Question 4?
+The 1000 bootstrap replicate versus the 10000 bootstrap replicates doesn't change a whole lot. Both of the lower bounds are around 570 and both of the upper bounds are around 800.The confidence intervals calculated in this question are actually larger than the confidence intervals I calculated in the last question.
+```{r}
+#5. Using Conecuh.csv, apply a bootstrap approach to construct the 95% Confidence Interval for the mean annual streamflows. How does your answer change if you use 1000 bootstrap replicates vs. 10000 bootstrap replicates? How does your bootstrap Confidence Interval compare to your estimate in Question 4?
+
+#initial sample of size 20 from population data
+samp_flow <- sample(flow,20)
+
+#bootstrap for 1000 replicates
+bstrap_low <- c() #initialize vector to store results of for loop
+for (i in 1:1000){
+  bstrap_low <- c(bstrap_low, mean(sample(samp_flow, 20, replace = T)))
+} #run loop for bootstrap to randomly select from the 20 available data points 1000 times
+
+lower_bound_low <- quantile(bstrap_low, 0.025) #lower bound of 95% CI for bootstrap
+upper_bound_low <- quantile(bstrap_low, 0.975) #upper bound of 95% CI for bootstrap
+
+lower_bound_low
+upper_bound_low
+
+
+#bootstrap for 10000 replicates
+bstrap_high <- c() #initialize vector to store results of for loop
+for (i in 1:10000){
+  bstrap_high <- c(bstrap_high, mean(sample(samp_flow, 20, replace = T)))
+} #run loop for bootstrap to randomly select from the 20 available data points 10000 times
+
+lower_bound_high <- quantile(bstrap_high, 0.025) #lower bound of 95% CI for bootstrap
+upper_bound_high <- quantile(bstrap_high, 0.975) #upper bound of 95% CI for bootstrap
+
+lower_bound_high
+upper_bound_high
 ```
 
