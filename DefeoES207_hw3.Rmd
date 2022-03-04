@@ -215,6 +215,8 @@ upper_bound_high
 ```
 
 CQ1. Write a function that calculates the mean, median, standard deviation, interquartile range, and QQ-Plot. Apply that function to the TP concentration data. In ~300 words or less discuss the differences between these measures and what conclusions you can draw about the data.
+Mean and median are both measures of center, but the mean is the sum of all observations divided by the number of values and the median is the middle number when the data is ordered sequentially. The mean is more susceptible to the influence of outliers so when you have skewed data, it can be better to use the median for a measure of center.Standard deviation and IQR are both measures of spread and the variability of a sample.IQR is the range of the middle half of the data while standard deviation is the average distance from the mean. Standard deviation is more susceptible to outliers than IQR because it depends on individual values.
+The mean is 59.8, the median is 40.2, the standard deviation is 57.5, and the IQR is 49.4. The mean is larger than the median so we can say that the distribution is positively skewed. We also see the positive skew of the data in the QQ-Plot because it diverges above where the normal line.There is a fair bit of spread in our data set so we can't be as confident in predictions we make on the sample being applicable to the population.
 
 ```{r}
 #CQ1. Write a function that calculates the mean, median, standard deviation, interquartile range, and QQ-Plot. Apply that function to the TP concentration data. In ~300 words or less discuss the differences between these measures and what conclusions you can draw about the data.
@@ -235,9 +237,44 @@ CQ1 <- function(TP) {
   IQR_TP <- IQR(TP, na.rm = TRUE)
   print(IQR_TP)
   qqnorm(TP)
+  qqline(TP)
 }
 
 CQ1(TP)
 
+```
+
+
+CQ2. Using this information and dataset, what design discharge should be established for this intake in order to ensure that there is only a 5% probability that the true 0.1 frequency annual minimum flow is below the design discharge?
+The data is not normally distributed and has a positive skew as seen with the mean being larger than the median and the deviation from the normal line in the qq plot. Therefore we need to use nonparametric tests to evaluate this. We should establish the design to be 20.3 minimum flow so that the intake is mostly properly submerged.
+
+```{r}
+#CQ2. Using this information and dataset, what design discharge should be established for this intake in order to ensure that there is only a 5% probability that the true 0.1 frequency annual minimum flow is below the design discharge?
+library(tidyverse)
+discharge <- read_csv("PotomacOneDayLow.csv") #import data
+min_dis <- discharge$Q
+min_dis
+
+#Evaluating normality to determine suitability of tests
+qqnorm(min_dis)
+qqline(min_dis)
+
+mean(min_dis)
+median(min_dis)
+
+length(min_dis)
+n <- 84
+
+#evaluate likelihood of scenarios
+min_disHatP <- quantile(min_dis, probs = 0.1, type = 6)
+min_disHatP
+
+p = 0.1 
+z95 <- qnorm(0.95)
+RU <- n * p + z95 * sqrt(n * p * (1 - p)) + 0.5 
+RU
+
+xUpper <- quantile(min_dis, probs = RU/n, type = 6) 
+xUpper
 ```
 
