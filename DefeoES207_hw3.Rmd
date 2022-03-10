@@ -101,7 +101,7 @@ print("Our 95% PI is: (0.3123, 0.905685)")
 
 
 4. Import Conecuh.csv and construct the 95% Confidence and Prediction Intervals for the mean and median annual stream flows.
-The 95% CI for the mean is 668.65 to 696.85. The 95% CI for the median is 566.897 and 595.10. The 95% PI for the mean is 104.72 to 1260.78. The 95% PI for the median is 2.97 to 1159.03. As expected, the predicition intervals are wider than the confidence intervals.
+The 95% CI for the mean is 556.6 to 808.9. The 95% CI for the median is 454.9 and 707.14. The 95% PI for the mean is 104.72 to 1260.78. The 95% PI for the median is 2.97 to 1159.03. As expected, the prediction intervals are wider than the confidence intervals.
 ```{r}
 #4. Import Conecuh.csv and construct the 95% Confidence and Prediction Intervals for the mean and median annual stream flows.
 #Import Excel file
@@ -125,9 +125,9 @@ flow_t
 
 #95% CI for the mean
 CImean_hat <- mean(flow)  #find the mean of the data
-CI_SE <- sd(flow)/(f_n)^1/2 #find the standard error of the data
+CI_SE <- sd(flow)/sqrt(f_n) #find the standard error of the data
 CImean_hat #print mean of the data
-CImeanSE #print SE of the data
+CI_SE #print SE of the data
 
 CI_ME <- flow_t*CI_SE #find margin of error of the data
 CI_ME  #print margin of error
@@ -181,7 +181,7 @@ flow_PImedian_high
 
 
 5. Using Conecuh.csv, apply a bootstrap approach to construct the 95% Confidence Interval for the mean annual streamflows. How does your answer change if you use 1000 bootstrap replicates vs. 10000 bootstrap replicates? How does your bootstrap Confidence Interval compare to your estimate in Question 4?
-The 1000 bootstrap replicate versus the 10000 bootstrap replicates doesn't change a whole lot. Both of the lower bounds are around 570 and both of the upper bounds are around 800.The confidence intervals calculated in this question are actually larger than the confidence intervals I calculated in the last question.
+The 1000 bootstrap replicate versus the 10000 bootstrap replicates doesn't change a whole lot. Both of the lower bounds are around 570 and both of the upper bounds are around 800.The confidence intervals calculated in this question are slightly smaller than the ones I calculated in the previous question.
 ```{r}
 #5. Using Conecuh.csv, apply a bootstrap approach to construct the 95% Confidence Interval for the mean annual streamflows. How does your answer change if you use 1000 bootstrap replicates vs. 10000 bootstrap replicates? How does your bootstrap Confidence Interval compare to your estimate in Question 4?
 
